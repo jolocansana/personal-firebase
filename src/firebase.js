@@ -1,5 +1,5 @@
 import {initializeApp} from 'firebase/app';
-import {getFirestore, collection, getDocs} from 'firebase/firestore'
+import {getFirestore, collection, getDocs, setDoc, doc, deleteDoc} from 'firebase/firestore'
 import {ref} from 'vue'
 
 const firebaseConfig = {
@@ -14,10 +14,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app)
 const linksCollection = collection(db, 'links')
+const collectionString = 'links'
 
-// export const createLink = link => {
-//   return linksCollection.add(link)
-// }
+export const createLink = link => {
+  const docId = link.path.replaceAll('/','-')
+  console.log(docId)
+  setDoc(doc(db, collectionString, docId), {
+    path: link.path,
+    url: link.url,
+  });
+}
 
 // export const getLink = async id => {
 //   const link = await linksCollection.doc(id).get()
@@ -25,12 +31,17 @@ const linksCollection = collection(db, 'links')
 // }
 
 // export const updateLink = (id, link) => {
-//   return linksCollection.doc(id).update(link)
+//   const docId = id.replaceAll('/','-')
+//   updateDoc(doc(db, "users", docId), {
+//     path: link.path,
+//     url: link.url,
+//   });
 // }
 
-// export const deleteLink = id => {
-//   return linksCollection.doc(id).delete()
-// }
+export const deleteLink = id => {
+  const docId = id.replaceAll('/','-')
+  deleteDoc(doc(db, collectionString, docId));
+}
 
 export const useLoadLinks = async () => {
   var links = []
